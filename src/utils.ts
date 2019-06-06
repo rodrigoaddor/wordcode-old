@@ -4,3 +4,6 @@ export const promiseAnimation = (animation: Animation): Promise<void> => new Pro
   animation.onfinish = () => res()
   animation.oncancel = rej
 })
+
+let lastUid = 0;
+export const uuid = (prefix: string = ''): string => `${prefix}${++lastUid}`

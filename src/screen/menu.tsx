@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import Screen from '../components/screen'
 import './menu.sass'
-import Modal from '../components/modal'
+import TeamsModal from '../components/teams'
 
 interface IMenuScreenState {
   teamsModal: boolean
@@ -18,7 +18,9 @@ class MenuScreen extends React.Component<{}, IMenuScreenState> {
 
     const generateActions = (close: () => void) => (
       <>
-        <a className='button' onClick={close}>Close</a>
+        <a className='button' onClick={close}>
+          Close
+        </a>
       </>
     )
 
@@ -35,11 +37,7 @@ class MenuScreen extends React.Component<{}, IMenuScreenState> {
             </a>
           </div>
         </Screen>
-        {teamsModal && (
-          <Modal title='Teams' actions={generateActions} onClose={() => this.setState({ teamsModal: false })}>
-            Teams!
-          </Modal>
-        )}
+        {teamsModal && <TeamsModal onClose={() => this.setState({ teamsModal: false })} />}
       </>
     )
   }
