@@ -11,8 +11,8 @@ const teamAnimation: PropertyIndexedKeyframes = {
 }
 
 interface ITeamsModalProps {
-  onClose: () => void
-  teams?: Team[]
+  onClose: (teams: Team[]) => void
+  defaultTeams?: Team[]
 }
 
 interface ITeamsModalState {
@@ -26,10 +26,10 @@ class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
     super(props)
 
     this.state = {
-      teams: props.teams || []
+      teams: props.defaultTeams || []
     }
 
-    this.inputRefs = props.teams ? Array(props.teams.length).fill(React.createRef()) : []
+    this.inputRefs = props.defaultTeams ? Array(props.defaultTeams.length).fill(React.createRef()) : []
   }
 
   componentDidUpdate = (_, prevState: ITeamsModalState) => {
@@ -102,7 +102,12 @@ class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
     }
 
     return (
-      <Modal title='Teams' actions={generateActions} onClose={onClose}>
+      <Modal
+        title='Teams'
+        actions={generateActions}
+        onClose={() => onClose(teams.filter(team => team.hasData))}
+        shouldClose={() => teams.filter(team => team.hasData).length === teams.filter(team => team.hasSomeData).length}
+      >
         {teams.map((team: Team, index) => (
           <div className='field has-addons' key={team.id} ref={this.inputRefs[index]}>
             <p className='control is-expanded'>

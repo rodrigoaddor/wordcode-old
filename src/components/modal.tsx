@@ -5,6 +5,7 @@ interface IModalProps {
   title: string
   actions: (close: () => void) => React.ReactNode
   onClose: () => void
+  shouldClose: () => boolean
   noBackground?: boolean
   ignoreEsc?: boolean
   loading?: boolean
@@ -23,12 +24,24 @@ class Modal extends React.Component<IModalProps> {
   private readonly backgroundRef: React.RefObject<HTMLDivElement> = React.createRef()
   private readonly modalRef: React.RefObject<HTMLDivElement> = React.createRef()
 
+  handleKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') this.close()
+  }
+
   componentDidMount = () => {
     this.backgroundRef.current.animate(backgroundAnimation, { duration: 300, easing: 'ease' })
     this.modalRef.current.animate(modalAnimation, { duration: 300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' })
+
+    if (!this.props.ignoreEsc) window.addEventListener('keydown', this.handleKey)
+  }
+
+  componentWillUnmount = () => {
+    if (!this.props.ignoreEsc) window.removeEventListener('keydown', this.handleKey)
   }
 
   close = async () => {
+    if (this.props.shouldClose && !this.props.shouldClose()) return
+
     await Promise.all([
       promiseAnimation(
         this.backgroundRef.current.animate(backgroundAnimation, {
@@ -51,12 +64,8 @@ class Modal extends React.Component<IModalProps> {
     this.props.onClose()
   }
 
-  handleKey = (e: React.KeyboardEvent) => {
-    console.debug(this)
-  }
-
   render() {
-    const { noBackground, onClose, title, actions } = this.props
+    const { noBackground, onClose, title, actions, ignoreEsc } = this.props
 
     return (
       <div className='modal is-active'>
