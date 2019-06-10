@@ -1,8 +1,13 @@
 @import '~bulma/sass/utilities/mixins' 
 
+.modal-background
+  //display: none
+  +tablet
+    display: unset
+
 .modal-card
   height: 100vh
-  max-height: 100vh
+  max-height: 100vh !important
   margin: 0
 
   +tablet
