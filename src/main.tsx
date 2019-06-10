@@ -1,11 +1,15 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+
+import gameStore from './store'
+import Menu from './screen/menu'
 
 import './main.sass'
 
-import Menu from './screen/menu'
-
 ReactDOM.render(
-  React.createElement(Menu),
+  <Provider store={gameStore}>
+    <Menu />
+  </Provider>,
   document.getElementById('app')
 )

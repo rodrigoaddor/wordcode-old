@@ -1,16 +1,30 @@
 import * as React from 'react'
+import { connect } from 'react-redux'
+import { Action } from '../store/types'
 
 import Screen from '../components/screen'
 import './menu.sass'
 import TeamsModal from '../components/teams'
+import { Team } from '../store/data'
+
+interface IMenuScreenProps {
+  setTeams?: (teams: Team[]) => void
+}
 
 interface IMenuScreenState {
   teamsModal: boolean
 }
 
-class MenuScreen extends React.Component<{}, IMenuScreenState> {
+class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
   state = {
     teamsModal: false
+  }
+
+  onTeamsChange = (teams: Team[]) => {
+    this.props.setTeams(teams)
+    this.setState({
+      teamsModal: false
+    })
   }
 
   render() {
@@ -37,10 +51,19 @@ class MenuScreen extends React.Component<{}, IMenuScreenState> {
             </a>
           </div>
         </Screen>
-        {teamsModal && <TeamsModal onClose={() => this.setState({ teamsModal: false })} />}
+        {teamsModal && <TeamsModal onClose={this.onTeamsChange} />}
       </>
     )
   }
 }
 
-export default MenuScreen
+export default connect(
+  null,
+  dispatch => ({
+    setTeams: (teams: Team[]) =>
+      dispatch({
+        type: Action.SetTeams,
+        payload: teams
+      })
+  })
+)(MenuScreen)
