@@ -10,6 +10,13 @@ const teamAnimation: PropertyIndexedKeyframes = {
   maxHeight: ['0', '2.25em']
 }
 
+const clearAnimation: PropertyIndexedKeyframes = {
+  offset: [0, 0.2, 1.0],
+  opacity: [1, 0, 0],
+  transform: ['scaleY(1)', 'scaleY(1)', 'scaleY(0)'],
+  maxHeight: ['2.25em', '2.25em', '0']
+}
+
 interface ITeamsModalProps {
   onClose: (teams: Team[]) => void
   defaultTeams?: Team[]
@@ -21,6 +28,7 @@ interface ITeamsModalState {
 
 class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
   private readonly inputRefs: React.RefObject<HTMLDivElement>[]
+  private didReset: boolean = false
 
   constructor(props) {
     super(props)
@@ -33,7 +41,9 @@ class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
   }
 
   componentDidUpdate = (_, prevState: ITeamsModalState) => {
-    if (prevState.teams.length < this.state.teams.length) {
+    const prevLength = prevState.teams.length
+    const newLength = this.state.teams.length
+    if (prevLength < newLength || this.didReset) {
       const el = this.inputRefs[this.inputRefs.length - 1].current
 
       el.animate(teamAnimation, {
@@ -41,6 +51,8 @@ class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
         easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
       })
     }
+
+    this.didReset = false
   }
 
   handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +68,23 @@ class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
     }))
   }
 
+  remove = async (index: number) => {
+    await promiseAnimation(
+      this.inputRefs[index].current.animate(teamAnimation, {
+        duration: 200,
+        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        direction: 'reverse',
+        fill: 'forwards'
+      })
+    )
+
+    this.inputRefs.splice(index, 1)
+
+    this.setState(prevState => ({
+      teams: prevState.teams.filter((_, i) => i !== index)
+    }))
+  }
+
   autoRemove = async (e: React.FocusEvent<HTMLInputElement>) => {
     const target = e.target
     const index = parseInt(target.name.match(nameRegex)[1])
@@ -67,20 +96,7 @@ class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
     )
 
     if (index !== this.state.teams.length - 1 && !focused && !this.state.teams[index].hasSomeData) {
-      await promiseAnimation(
-        this.inputRefs[index].current.animate(teamAnimation, {
-          duration: 200,
-          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-          direction: 'reverse',
-          fill: 'forwards'
-        })
-      )
-
-      this.inputRefs.splice(index, 1)
-
-      this.setState(prevState => ({
-        teams: prevState.teams.filter((_, i) => i !== index)
-      }))
+      this.remove(index)
     }
   }
 
@@ -92,6 +108,37 @@ class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
       <>
         <a className='button' onClick={close}>
           Close
+        </a>
+        {/*
+        //@ts-ignore*/}
+        <a
+          className='button'
+          disabled={teams.length === 1 && !teams[teams.length - 1].hasSomeData}
+          onClick={async () => {
+            if (teams.length === 1 && !teams[teams.length - 1].hasSomeData) return
+            const animations = this.inputRefs.map((item, index) => {
+              return promiseAnimation(
+                item.current.animate(
+                  {
+                    ...clearAnimation,
+                    marginBottom: index !== this.inputRefs.length - 1 && ['12px', '12px', '0px']
+                  },
+                  {
+                    duration: 300,
+                    easing: 'cubic-bezier(0.77, 0, 0.175, 1)',
+                    fill: 'forwards'
+                  }
+                )
+              )
+            })
+
+            await Promise.all(animations)
+            this.didReset = true
+            this.inputRefs.splice(0)
+            this.setState({ teams: [] })
+          }}
+        >
+          Clear
         </a>
       </>
     )

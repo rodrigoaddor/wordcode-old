@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Action } from '../store/types'
+import { Action, GameState } from '../store/types'
 
 import Screen from '../components/screen'
 import './menu.sass'
@@ -9,6 +9,7 @@ import { Team } from '../store/data'
 
 interface IMenuScreenProps {
   setTeams?: (teams: Team[]) => void
+  defaultTeams?: Team[]
 }
 
 interface IMenuScreenState {
@@ -51,14 +52,16 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
             </a>
           </div>
         </Screen>
-        {teamsModal && <TeamsModal onClose={this.onTeamsChange} />}
+        {teamsModal && <TeamsModal defaultTeams={this.props.defaultTeams} onClose={this.onTeamsChange} />}
       </>
     )
   }
 }
 
 export default connect(
-  null,
+  (state: GameState) => ({
+    defaultTeams: state.teams
+  }),
   dispatch => ({
     setTeams: (teams: Team[]) =>
       dispatch({
