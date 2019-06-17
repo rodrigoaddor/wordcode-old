@@ -1,12 +1,13 @@
 import * as React from 'react'
-import { promiseAnimation } from '../utils'
+import { promiseAnimation, uuid } from '../utils'
 import './modal.sass'
 
 interface IModalProps {
   title: string
   actions: (close: () => void) => React.ReactNode
   onClose: () => void
-  shouldClose: () => boolean
+  shouldClose?: () => boolean
+  closeCancelled?: () => void
   noBackground?: boolean
   ignoreEsc?: boolean
   loading?: boolean
@@ -22,6 +23,7 @@ const modalAnimation: PropertyIndexedKeyframes = {
 }
 
 class Modal extends React.Component<IModalProps> {
+  private readonly id: string = uuid('modal')
   private readonly backgroundRef: React.RefObject<HTMLDivElement> = React.createRef()
   private readonly modalRef: React.RefObject<HTMLDivElement> = React.createRef()
 
@@ -29,19 +31,38 @@ class Modal extends React.Component<IModalProps> {
     if (e.key === 'Escape') this.close()
   }
 
+  handlePop = (e: PopStateEvent) => {
+    if (e.state !== this.id) return
+
+    if (!this.props.shouldClose || this.props.shouldClose()) {
+      this.close()
+    } else {
+      this.props.closeCancelled && this.props.closeCancelled()
+      history.go(1)
+    }
+  }
+
   componentDidMount = () => {
     this.backgroundRef.current.animate(backgroundAnimation, { duration: 300, easing: 'ease' })
     this.modalRef.current.animate(modalAnimation, { duration: 300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' })
 
     if (!this.props.ignoreEsc) window.addEventListener('keydown', this.handleKey)
+
+    history.replaceState(this.id, '')
+    history.pushState(null, '')
+    window.addEventListener('popstate', this.handlePop)
   }
 
   componentWillUnmount = () => {
     if (!this.props.ignoreEsc) window.removeEventListener('keydown', this.handleKey)
+    window.removeEventListener('popstate', this.handlePop)
   }
 
   close = async () => {
-    if (this.props.shouldClose && !this.props.shouldClose()) return
+    if (this.props.shouldClose && !this.props.shouldClose()) {
+      this.props.closeCancelled && this.props.closeCancelled()
+      return
+    }
 
     await Promise.all([
       promiseAnimation(
