@@ -1,5 +1,12 @@
 import { uuid } from '../utils'
 
+enum ScreenName {
+  Menu,
+  Waiting,
+  Playing,
+  Scores
+}
+
 class Team {
   public id?: string
 
@@ -15,4 +22,9 @@ class Team {
   }
 }
 
-export { Team }
+interface Transition {
+  keyframes: Keyframe[] | PropertyIndexedKeyframes
+  options: KeyframeAnimationOptions
+}
+
+export { ScreenName, Team, Transition }
