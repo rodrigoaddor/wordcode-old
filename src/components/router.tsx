@@ -3,12 +3,13 @@ import { ScreenName, Transition } from '../store/data'
 import { promiseAnimation } from '../utils'
 
 interface RouterData {
-  setScreen: (screen: ScreenName) => void
+  go: (screen: ScreenName) => void
   currentScreen: ScreenName
   previousScreen?: ScreenName
 }
+
 const RouterContext = React.createContext<RouterData>({
-  setScreen: () => console.error("Router setScreen called before it's built"),
+  go: () => console.error("Router setScreen called before it's built"),
   currentScreen: ScreenName.Menu
 })
 
@@ -24,7 +25,6 @@ interface IRouterState {
 class Router extends React.Component<IRouterProps, IRouterState> {
   private readonly children: React.ReactNode[] = []
   private readonly childrenRefs: Map<ScreenName, React.RefObject<Route>>
-  private transitioning: boolean = false
 
   constructor(props) {
     super(props)
@@ -52,27 +52,29 @@ class Router extends React.Component<IRouterProps, IRouterState> {
   }
 
   componentDidUpdate = async () => {
-    if (this.transitioning) {
-      if (!this.state.previousScreen) this.transitioning = false
-      return
-    }
-    this.transitioning = true
+    if (this.state.previousScreen === undefined) return
 
     const prevRoute = this.childrenRefs.get(this.state.previousScreen).current
     const newRoute = this.childrenRefs.get(this.state.currentScreen).current
 
+    const prevOut = prevRoute.props.outTransition
+    const newIn = newRoute.props.inTransition
+
     const promises = []
 
-    if (prevRoute.props.outTransition) promises.push(prevRoute.animate(prevRoute.props.outTransition))
+    if (prevOut) {
+      promises.push(prevRoute.animate(prevOut))
+    }
 
-    if (newRoute.props.inTransition) {
+    if (newIn) {
       promises.push(
         newRoute.animate({
-          keyframes: newRoute.props.inTransition.keyframes,
+          keyframes: newIn.keyframes,
           options: {
-            ...newRoute.props.inTransition.options,
-            delay: Number(prevRoute.props.outTransition.options.duration.toString())
-          }
+            ...newIn.options,
+            delay: prevOut && Number(prevOut.options.duration.toString())
+          },
+          zIndex: newIn.zIndex
         })
       )
     }
@@ -81,7 +83,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     this.setState({ previousScreen: undefined })
   }
 
-  setScreen = (screen: ScreenName) =>
+  go = (screen: ScreenName) =>
     this.setState((prevState: IRouterState) => ({
       currentScreen: screen,
       previousScreen: prevState.currentScreen
@@ -91,7 +93,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     const { currentScreen, previousScreen } = this.state
 
     return (
-      <RouterContext.Provider value={{ currentScreen, setScreen: this.setScreen, previousScreen }}>
+      <RouterContext.Provider value={{ currentScreen, go: this.go, previousScreen }}>
         {this.children}
       </RouterContext.Provider>
     )
@@ -108,12 +110,10 @@ interface IRouteProps {
 class Route extends React.Component<IRouteProps> {
   private readonly elRef: React.RefObject<HTMLDivElement> = React.createRef()
 
-  componentDidMount = () => {
-    ;(window as any).theRef = this.elRef
+  animate = (transition: Transition): Promise<void> => {
+    this.elRef.current.style['zIndex'] = String(transition.zIndex || 0)
+    return promiseAnimation(this.elRef.current.animate(transition.keyframes, { ...transition.options, fill: 'both' }))
   }
-
-  animate = (transition: Transition): Promise<void> =>
-    promiseAnimation(this.elRef.current.animate(transition.keyframes, { ...transition.options, fill: 'both' }))
 
   render = () => {
     const divStyle: React.CSSProperties = {

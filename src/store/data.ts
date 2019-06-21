@@ -25,6 +25,7 @@ class Team {
 interface Transition {
   keyframes: Keyframe[] | PropertyIndexedKeyframes
   options: KeyframeAnimationOptions
+  zIndex?: number
 }
 
 export { ScreenName, Team, Transition }

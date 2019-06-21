@@ -1,9 +1,9 @@
 import * as React from 'react'
 import './screen.sass'
 
-class Screen extends React.PureComponent {
+class Screen extends React.PureComponent<React.HTMLAttributes<HTMLDivElement>> {
   render() {
-    return <div className='screen'>
+    return <div {...this.props} className={['screen', this.props.className].join(' ')}>
       {this.props.children}
     </div>
   }

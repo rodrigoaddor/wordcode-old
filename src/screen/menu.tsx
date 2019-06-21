@@ -5,7 +5,8 @@ import { Action, GameState } from '../store/types'
 import Screen from '../components/screen'
 import './menu.sass'
 import TeamsModal from '../components/teams'
-import { Team } from '../store/data'
+import { ScreenName, Team } from '../store/data'
+import { RouterContext } from '../components/router'
 
 interface IMenuScreenProps {
   setTeams?: (teams: Team[]) => void
@@ -44,13 +45,17 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
         <Screen>
           <h1 className='is-title title'>WordCode</h1>
 
-          <div className='buttons has-addons'>
-            <a className='button is-rounded'>Words</a>
-            <a className='button is-large is-info'>Start</a>
-            <a className='button is-rounded' onClick={() => this.setState({ teamsModal: true })}>
-              Teams
-            </a>
-          </div>
+          <RouterContext.Consumer>
+            {routerData => (
+              <div className='buttons has-addons'>
+                <a className='button is-rounded'>Words</a>
+                <a className='button is-large is-info' onClick={() => routerData.go(ScreenName.Playing)}>Start</a>
+                <a className='button is-rounded' onClick={() => this.setState({ teamsModal: true })}>
+                  Teams
+                </a>
+              </div>
+            )}
+          </RouterContext.Consumer>
         </Screen>
         {teamsModal && <TeamsModal defaultTeams={this.props.defaultTeams} onClose={this.onTeamsChange} />}
       </>
