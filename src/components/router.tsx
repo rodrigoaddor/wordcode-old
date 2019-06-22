@@ -4,15 +4,18 @@ import { promiseAnimation } from '../utils'
 
 // Transition or Transition generator, with the other screen as argument
 // (previousScreen if inTransition, or currentScreen if outTransition)
-type DynamicTransition = Transition | ((anotherScreen: ScreenName) => Transition)
+type DynamicTransition = Transition | ((routerData: RouterData) => Transition)
 
 interface RouterData {
-  go: (screen: ScreenName) => void
   currentScreen: ScreenName
   previousScreen?: ScreenName
 }
 
-const RouterContext = React.createContext<RouterData>({
+interface RouterContext extends RouterData {
+  go: (screen: ScreenName) => void
+}
+
+const RouterContext = React.createContext<RouterContext>({
   go: () => console.error("Router setScreen called before it's built"),
   currentScreen: ScreenName.Menu
 })
@@ -32,6 +35,21 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 
   // Checks if a DynamicTransition is an actual Transition or an Transition generator
   static isTransition = (transition: DynamicTransition): transition is Transition => typeof transition !== 'function'
+
+  get routerData(): RouterData {
+    const {currentScreen, previousScreen} = this.state
+    return {
+      currentScreen,
+      previousScreen
+    }
+  }
+
+  get routerContext(): RouterContext {
+    return {
+      ...this.routerData,
+      go: this.go
+    }
+  }
 
   constructor(props) {
     super(props)
@@ -64,8 +82,8 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     const dynPrevOut = prevRoute.props.outTransition
     const dynNewIn = newRoute.props.inTransition
 
-    const prevOut: Transition = Router.isTransition(dynPrevOut) ? dynPrevOut : dynPrevOut(this.state.currentScreen)
-    const newIn: Transition = Router.isTransition(dynNewIn) ? dynNewIn : dynNewIn(this.state.previousScreen)
+    const prevOut: Transition = Router.isTransition(dynPrevOut) ? dynPrevOut : dynPrevOut(this.routerData)
+    const newIn: Transition = Router.isTransition(dynNewIn) ? dynNewIn : dynNewIn(this.routerData)
 
     const promises = []
 
@@ -97,10 +115,8 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     }))
 
   render() {
-    const { currentScreen, previousScreen } = this.state
-
     return (
-      <RouterContext.Provider value={{ currentScreen, go: this.go, previousScreen }}>
+      <RouterContext.Provider value={this.routerContext}>
         {this.children}
       </RouterContext.Provider>
     )
@@ -145,4 +161,4 @@ class Route extends React.Component<IRouteProps> {
   }
 }
 
-export { Router, Route, RouterContext }
+export { Router, Route, RouterData, RouterContext }
