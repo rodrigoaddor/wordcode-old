@@ -109,7 +109,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
             ...newIn.options,
             delay: prevOut && Number(prevOut.options.duration.toString())
           },
-          zIndex: newIn.zIndex
+          className: newIn.className
         })
       )
     }
@@ -140,11 +140,19 @@ class Route extends React.Component<IRouteProps> {
   private readonly elRef: React.RefObject<HTMLDivElement> = React.createRef()
 
   animate = (transition: Transition): Promise<void> => {
-    const {current: el} = this.elRef
-    el.style['zIndex'] = String(transition.zIndex || 0)
+    const { current: el } = this.elRef
+    const oldClassName = el.className
     el.className = classNames(el.classList, transition.className)
 
-    return promiseAnimation(this.elRef.current.animate(transition.keyframes, { ...transition.options, fill: 'both' }))
+    const anim = promiseAnimation(
+      this.elRef.current.animate(transition.keyframes, { ...transition.options, fill: 'both' })
+    )
+
+    anim.then(() => {
+      el.className = oldClassName
+    })
+
+    return anim
   }
 
   render = () => {
