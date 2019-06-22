@@ -2,6 +2,10 @@ import * as React from 'react'
 import { ScreenName, Transition } from '../store/data'
 import { promiseAnimation } from '../utils'
 
+// Transition or Transition generator, with the other screen as argument
+// (previousScreen if inTransition, or currentScreen if outTransition)
+type DynamicTransition = Transition | ((anotherScreen: ScreenName) => Transition)
+
 interface RouterData {
   go: (screen: ScreenName) => void
   currentScreen: ScreenName
@@ -26,6 +30,9 @@ class Router extends React.Component<IRouterProps, IRouterState> {
   private readonly children: React.ReactNode[] = []
   private readonly childrenRefs: Map<ScreenName, React.RefObject<Route>>
 
+  // Checks if a DynamicTransition is an actual Transition or an Transition generator
+  static isTransition = (transition: DynamicTransition): transition is Transition => typeof transition !== 'function'
+
   constructor(props) {
     super(props)
 
@@ -47,9 +54,6 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     }
   }
 
-  componentDidMount = () => {
-    ;(window as any).Router = this
-  }
 
   componentDidUpdate = async () => {
     if (this.state.previousScreen === undefined) return
@@ -57,8 +61,11 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     const prevRoute = this.childrenRefs.get(this.state.previousScreen).current
     const newRoute = this.childrenRefs.get(this.state.currentScreen).current
 
-    const prevOut = prevRoute.props.outTransition
-    const newIn = newRoute.props.inTransition
+    const dynPrevOut = prevRoute.props.outTransition
+    const dynNewIn = newRoute.props.inTransition
+
+    const prevOut: Transition = Router.isTransition(dynPrevOut) ? dynPrevOut : dynPrevOut(this.state.currentScreen)
+    const newIn: Transition = Router.isTransition(dynNewIn) ? dynNewIn : dynNewIn(this.state.previousScreen)
 
     const promises = []
 
@@ -102,8 +109,8 @@ class Router extends React.Component<IRouterProps, IRouterState> {
 
 interface IRouteProps {
   screen: ScreenName
-  inTransition?: Transition
-  outTransition?: Transition
+  inTransition?: DynamicTransition
+  outTransition?: DynamicTransition
   ref?: React.RefObject<Route>
 }
 
