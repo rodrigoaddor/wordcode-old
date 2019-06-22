@@ -1,14 +1,18 @@
 import * as React from 'react'
-import { ScreenName, Transition } from '../store/data'
+import { ScreenName, Transition, TransitionType } from '../store/data'
 import { promiseAnimation } from '../utils'
 
 // Transition or Transition generator, with the other screen as argument
 // (previousScreen if inTransition, or currentScreen if outTransition)
-type DynamicTransition = Transition | ((routerData: RouterData) => Transition)
+type DynamicTransition = Transition | ((transitionInfo: TransitionInfo) => Transition)
 
 interface RouterData {
   currentScreen: ScreenName
   previousScreen?: ScreenName
+}
+
+interface TransitionInfo extends RouterData {
+  type: TransitionType
 }
 
 interface RouterContext extends RouterData {
@@ -37,7 +41,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
   static isTransition = (transition: DynamicTransition): transition is Transition => typeof transition !== 'function'
 
   get routerData(): RouterData {
-    const {currentScreen, previousScreen} = this.state
+    const { currentScreen, previousScreen } = this.state
     return {
       currentScreen,
       previousScreen
@@ -72,7 +76,6 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     }
   }
 
-
   componentDidUpdate = async () => {
     if (this.state.previousScreen === undefined) return
 
@@ -82,8 +85,13 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     const dynPrevOut = prevRoute.props.outTransition
     const dynNewIn = newRoute.props.inTransition
 
-    const prevOut: Transition = Router.isTransition(dynPrevOut) ? dynPrevOut : dynPrevOut(this.routerData)
-    const newIn: Transition = Router.isTransition(dynNewIn) ? dynNewIn : dynNewIn(this.routerData)
+    const prevOut: Transition = Router.isTransition(dynPrevOut)
+      ? dynPrevOut
+      : dynPrevOut({ ...this.routerData, type: TransitionType.OUT })
+
+    const newIn: Transition = Router.isTransition(dynNewIn)
+      ? dynNewIn
+      : dynNewIn({ ...this.routerData, type: TransitionType.IN })
 
     const promises = []
 
@@ -115,11 +123,7 @@ class Router extends React.Component<IRouterProps, IRouterState> {
     }))
 
   render() {
-    return (
-      <RouterContext.Provider value={this.routerContext}>
-        {this.children}
-      </RouterContext.Provider>
-    )
+    return <RouterContext.Provider value={this.routerContext}>{this.children}</RouterContext.Provider>
   }
 }
 
@@ -161,4 +165,4 @@ class Route extends React.Component<IRouteProps> {
   }
 }
 
-export { Router, Route, RouterData, RouterContext }
+export { Router, Route, RouterData, RouterContext, TransitionInfo }

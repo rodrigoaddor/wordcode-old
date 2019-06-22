@@ -28,4 +28,9 @@ interface Transition {
   zIndex?: number
 }
 
-export { ScreenName, Team, Transition }
+enum TransitionType {
+  IN,
+  OUT
+}
+
+export { ScreenName, Team, Transition, TransitionType }
