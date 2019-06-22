@@ -26,6 +26,7 @@ interface Transition {
   keyframes: Keyframe[] | PropertyIndexedKeyframes
   options: KeyframeAnimationOptions
   zIndex?: number
+  className?: string
 }
 
 enum TransitionType {

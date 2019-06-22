@@ -1,4 +1,6 @@
 import * as React from 'react'
+import classNames from 'classnames'
+
 import { ScreenName, Transition, TransitionType } from '../store/data'
 import { promiseAnimation } from '../utils'
 
@@ -138,7 +140,10 @@ class Route extends React.Component<IRouteProps> {
   private readonly elRef: React.RefObject<HTMLDivElement> = React.createRef()
 
   animate = (transition: Transition): Promise<void> => {
-    this.elRef.current.style['zIndex'] = String(transition.zIndex || 0)
+    const {current: el} = this.elRef
+    el.style['zIndex'] = String(transition.zIndex || 0)
+    el.className = classNames(el.classList, transition.className)
+
     return promiseAnimation(this.elRef.current.animate(transition.keyframes, { ...transition.options, fill: 'both' }))
   }
 
