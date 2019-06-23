@@ -12,7 +12,7 @@ const teamAnimation: PropertyIndexedKeyframes = {
 
 const clearAnimation: PropertyIndexedKeyframes = {
   offset: [0, 0.2, 1.0],
-  opacity: [1, 0, 0],
+  opacity: [1, 1, 0],
   transform: ['scaleY(1)', 'scaleY(1)', 'scaleY(0)'],
   maxHeight: ['2.25em', '2.25em', '0']
 }
@@ -121,7 +121,7 @@ class TeamsModal extends React.Component<ITeamsModalProps, ITeamsModalState> {
                 item.current.animate(
                   {
                     ...clearAnimation,
-                    marginBottom: index !== this.inputRefs.length - 1 && ['12px', '12px', '0px']
+                    marginBottom: index !== this.inputRefs.length - 1 ? ['12px', '12px', '0px'] : ['0px', '0px',  '0px']
                   },
                   {
                     duration: 300,
