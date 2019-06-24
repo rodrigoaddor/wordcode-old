@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Action, GameState } from '../store/types'
+import { Action, GameState, Coordinates } from '../store/types'
 
 import Screen from '../components/screen'
 import './menu.sass'
@@ -10,6 +10,7 @@ import { RouterContext } from '../components/router'
 
 interface IMenuScreenProps {
   setTeams?: (teams: Team[]) => void
+  setTransitionPos: (coords: Coordinates) => void
   defaultTeams?: Team[]
 }
 
@@ -40,16 +41,23 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
       </>
     )
 
+    const onStart = (e: React.MouseEvent<HTMLAnchorElement>, routerContext: RouterContext) => {
+      this.props.setTransitionPos({ x: e.pageX, y: e.pageY })
+      routerContext.go(ScreenName.Playing)
+    }
+
     return (
       <>
         <Screen>
           <h1 className='is-title title'>WordCode</h1>
 
           <RouterContext.Consumer>
-            {routerData => (
+            {(routerContext: RouterContext) => (
               <div className='buttons has-addons'>
                 <a className='button is-rounded'>Words</a>
-                <a className='button is-large is-info' onClick={() => routerData.go(ScreenName.Playing)}>Start</a>
+                <a className='button is-large is-info' onClick={e => onStart(e, routerContext)}>
+                  Start
+                </a>
                 <a className='button is-rounded' onClick={() => this.setState({ teamsModal: true })}>
                   Teams
                 </a>
@@ -72,6 +80,11 @@ export default connect(
       dispatch({
         type: Action.SetTeams,
         payload: teams
+      }),
+    setTransitionPos: (coords: Coordinates) =>
+      dispatch({
+        type: Action.SetTransitionPos,
+        payload: coords
       })
   })
 )(MenuScreen)

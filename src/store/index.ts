@@ -10,6 +10,9 @@ export default createStore((state: GameState = defaultState, action: GameActions
     case Action.SetTeams:
       return { ...state, teams: action.payload }
 
+    case Action.SetTransitionPos:
+      return { ...state, transitionPos: action.payload }
+
     default:
       return state
   }

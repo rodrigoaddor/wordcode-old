@@ -9,7 +9,7 @@ import Game from './screen/game';
 import './main.sass'
 import { Route, Router } from './components/router'
 import { ScreenName } from './store/data'
-import { appear } from './transitions'
+import { appear, ripple } from './transitions'
 
 ReactDOM.render(
   <Provider store={gameStore}>
@@ -17,7 +17,7 @@ ReactDOM.render(
       <Route screen={ScreenName.Menu} inTransition={appear}>
         <Menu />
       </Route>
-      <Route screen={ScreenName.Playing} inTransition={appear}>
+      <Route screen={ScreenName.Playing} inTransition={ripple}>
         <Game />
       </Route>
     </Router>
