@@ -106,8 +106,8 @@ class Router extends React.Component<IRouterProps, IRouterState> {
         newRoute.animate({
           keyframes: newIn.keyframes,
           options: {
-            ...newIn.options,
-            delay: prevOut && Number(prevOut.options.duration.toString())
+            delay: prevOut && Number(prevOut.options.duration.toString()),
+            ...newIn.options
           },
           className: newIn.className
         })
@@ -145,7 +145,7 @@ class Route extends React.Component<IRouteProps> {
     el.className = classNames(el.classList, transition.className)
 
     const anim = promiseAnimation(
-      this.elRef.current.animate(transition.keyframes, { ...transition.options, fill: 'both' })
+      this.elRef.current.animate(transition.keyframes, { fill: 'both', ...transition.options })
     )
 
     anim.then(() => {
