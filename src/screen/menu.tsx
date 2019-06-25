@@ -8,10 +8,14 @@ import TeamsModal from '../components/teams'
 import { ScreenName, Team } from '../store/data'
 import { RouterContext } from '../components/router'
 
+const shakeKeyframes: PropertyIndexedKeyframes = {
+  transform: [-1, 2, -4, 4, -4, 4, -4, 2, -1].map(i => `translateX(${i}px)`)
+}
+
 interface IMenuScreenProps {
   setTeams?: (teams: Team[]) => void
   setTransitionPos: (coords: Coordinates) => void
-  defaultTeams?: Team[]
+  initialTeams?: Team[]
 }
 
 interface IMenuScreenState {
@@ -19,6 +23,8 @@ interface IMenuScreenState {
 }
 
 class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
+  private readonly teamsRef: React.RefObject<HTMLAnchorElement> = React.createRef()
+  
   state = {
     teamsModal: false
   }
@@ -42,6 +48,14 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
     )
 
     const onStart = (e: React.MouseEvent<HTMLAnchorElement>, routerContext: RouterContext) => {
+      if (this.props.initialTeams.length === 0) {
+        this.teamsRef.current.animate(shakeKeyframes, {
+          duration: 1000,
+          easing: 'cubic-bezier(.36,.07,.19,.97)'
+        })
+        return
+      }
+
       this.props.setTransitionPos({ x: e.pageX, y: e.pageY })
       routerContext.go(ScreenName.Playing)
     }
@@ -58,14 +72,18 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
                 <a className='button is-large is-info' onClick={e => onStart(e, routerContext)}>
                   Start
                 </a>
-                <a className='button is-rounded' onClick={() => this.setState({ teamsModal: true })}>
+                <a
+                  className='button is-rounded'
+                  ref={this.teamsRef}
+                  onClick={() => this.setState({ teamsModal: true })}
+                >
                   Teams
                 </a>
               </div>
             )}
           </RouterContext.Consumer>
         </Screen>
-        {teamsModal && <TeamsModal defaultTeams={this.props.defaultTeams} onClose={this.onTeamsChange} />}
+        {teamsModal && <TeamsModal defaultTeams={this.props.initialTeams} onClose={this.onTeamsChange} />}
       </>
     )
   }
@@ -73,7 +91,7 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
 
 export default connect(
   (state: GameState) => ({
-    defaultTeams: state.teams
+    initialTeams: state.teams
   }),
   dispatch => ({
     setTeams: (teams: Team[]) =>
