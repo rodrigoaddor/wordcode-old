@@ -12,7 +12,6 @@ const appear: Transition = {
 
 const ripple = (transitionInfo: TransitionInfo): Transition => {
   const { x, y } = store.getState().transitionPos
-  console.log(x, y)
 
   const px = x + 'px'
   const py = y + 'px'
