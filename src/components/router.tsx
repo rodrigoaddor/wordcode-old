@@ -1,8 +1,25 @@
 import * as React from 'react'
 import classNames from 'classnames'
 
-import { ScreenName, Transition, TransitionType } from '../store/data'
 import { promiseAnimation } from '../utils'
+
+enum ScreenName {
+  Menu,
+  Waiting,
+  Playing,
+  Scores
+}
+
+interface Transition {
+  keyframes: Keyframe[] | PropertyIndexedKeyframes
+  options: KeyframeAnimationOptions
+  className?: string
+}
+
+enum TransitionType {
+  IN,
+  OUT
+}
 
 // Transition or Transition generator, with the other screen as argument
 // (previousScreen if inTransition, or currentScreen if outTransition)
@@ -178,4 +195,4 @@ class Route extends React.Component<IRouteProps> {
   }
 }
 
-export { Router, Route, RouterData, RouterContext, TransitionInfo }
+export { Router, Route, RouterData, RouterContext, ScreenName, Transition, TransitionType, TransitionInfo }

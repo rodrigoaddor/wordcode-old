@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Modal from './modal'
-import { Team } from '../store/data'
 import { promiseAnimation } from '../utils'
+import { Team } from '../store/team';
 
 const nameRegex = new RegExp('^(\\d+)-((?:first)|(?:second))$')
 

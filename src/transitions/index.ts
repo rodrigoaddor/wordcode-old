@@ -1,6 +1,5 @@
-import { Transition } from '../store/data'
-import { TransitionInfo } from '../components/router'
-import store from '../store'
+import { TransitionInfo, Transition } from '../components/router'
+import { store } from '../store'
 
 const appear: Transition = {
   keyframes: [{ opacity: 0, transform: 'scale(0.75)' }, { opacity: 1, transform: 'scale(1)' }],
@@ -11,7 +10,7 @@ const appear: Transition = {
 }
 
 const ripple = (transitionInfo: TransitionInfo): Transition => {
-  const { x, y } = store.getState().transitionPos
+  const { x, y } = store.getState().transition.pos
 
   const px = x + 'px'
   const py = y + 'px'

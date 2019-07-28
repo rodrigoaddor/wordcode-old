@@ -1,33 +1,32 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
+import * as IDB from 'idb'
 
-import gameStore from './store'
+import { store, AppState } from './store'
 import Menu from './screen/menu'
 import Game from './screen/game'
 
 import './main.sass'
-import { Route, Router } from './components/router'
-import { ScreenName, Team } from './store/data'
+import { Route, Router, ScreenName } from './components/router'
 import { appear, ripple } from './transitions'
-import store from './store'
-import { GameState, Action } from './store/types'
+import { TeamAction, Team } from './store/team';
 
 const savedTeams = localStorage.getItem('teams')
 if (savedTeams) {
   store.dispatch({
-    type: Action.SetTeams,
+    type: TeamAction.SetTeams,
     payload: JSON.parse(savedTeams).map(team => Team.fromJson(team))
   })
 }
 
 store.subscribe(() => {
-  const state: GameState = store.getState()
-  localStorage.setItem('teams', JSON.stringify(state.teams.map(team => Team.toJson(team))))
+  const state: AppState = store.getState()
+  localStorage.setItem('teams', JSON.stringify(state.teams.teams.map(team => Team.toJson(team))))
 })
 
 ReactDOM.render(
-  <Provider store={gameStore}>
+  <Provider store={store}>
     <Router initialScreen={ScreenName.Menu}>
       <Route screen={ScreenName.Menu} inTransition={appear}>
         <Menu />

@@ -1,19 +1,16 @@
-import { createStore } from 'redux'
-import { GameState, Action, GameActions } from './types'
+import { createStore, combineReducers } from 'redux'
+import { teamReducer } from './team'
+import { transitionReducer } from './transition';
 
-const defaultState: GameState = {
-  teams: []
-}
+const rootReducer = combineReducers({
+  teams: teamReducer,
+  transition: transitionReducer
+})
+type AppState = ReturnType<typeof rootReducer>
 
-export default createStore((state: GameState = defaultState, action: GameActions): GameState => {
-  switch (action.type) {
-    case Action.SetTeams:
-      return { ...state, teams: action.payload }
+const store = createStore(
+  rootReducer,
+  (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
+)
 
-    case Action.SetTransitionPos:
-      return { ...state, transitionPos: action.payload }
-
-    default:
-      return state
-  }
-}, (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__())
+export { store, AppState }

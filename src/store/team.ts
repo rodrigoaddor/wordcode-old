@@ -1,14 +1,10 @@
+import { PayloadedAction } from './common'
 import { uuid } from '../utils'
 
-enum ScreenName {
-  Menu,
-  Waiting,
-  Playing,
-  Scores
-}
+//  Types  //
 
 class Team {
-  public id?: string
+  readonly id?: string
 
   constructor(public first: string = '', public second: string = '', storeId: boolean = true) {
     if (storeId) this.id = uuid('team')
@@ -31,15 +27,32 @@ class Team {
   }
 }
 
-interface Transition {
-  keyframes: Keyframe[] | PropertyIndexedKeyframes
-  options: KeyframeAnimationOptions
-  className?: string
+// Actions //
+
+enum TeamAction {
+  SetTeams = 'SET_TEAMS'
 }
 
-enum TransitionType {
-  IN,
-  OUT
+type SetTeams = PayloadedAction<TeamAction.SetTeams, Team[]>
+type TeamActions = SetTeams
+
+//  State  //
+
+interface TeamState {
+  teams: Team[]
 }
 
-export { ScreenName, Team, Transition, TransitionType }
+const defaultState: TeamState = {
+  teams: []
+}
+
+const teamReducer = (state: TeamState = defaultState, action: TeamActions): TeamState => {
+  switch (action.type) {
+    case TeamAction.SetTeams:
+      return { ...state, teams: action.payload }
+    default:
+      return state
+  }
+}
+
+export { teamReducer, TeamAction, Team }

@@ -1,12 +1,13 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Action, GameState, Coordinates } from '../store/types'
 
 import Screen from '../components/screen'
 import './menu.sass'
 import TeamsModal from '../components/teams'
-import { ScreenName, Team } from '../store/data'
-import { RouterContext } from '../components/router'
+import { RouterContext, ScreenName } from '../components/router'
+import { Team, TeamAction } from '../store/team';
+import { Pos, TransitionAction } from '../store/transition';
+import { AppState } from '../store';
 
 const shakeKeyframes: PropertyIndexedKeyframes = {
   transform: [-1, 2, -4, 4, -4, 4, -4, 2, -1].map(i => `translateX(${i}px)`)
@@ -14,7 +15,7 @@ const shakeKeyframes: PropertyIndexedKeyframes = {
 
 interface IMenuScreenProps {
   setTeams?: (teams: Team[]) => void
-  setTransitionPos: (coords: Coordinates) => void
+  setTransitionPos: (coords: Pos) => void
   initialTeams?: Team[]
 }
 
@@ -90,18 +91,18 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
 }
 
 export default connect(
-  (state: GameState) => ({
-    initialTeams: state.teams
+  (state: AppState) => ({
+    initialTeams: state.teams.teams
   }),
   dispatch => ({
     setTeams: (teams: Team[]) =>
       dispatch({
-        type: Action.SetTeams,
+        type: TeamAction.SetTeams,
         payload: teams
       }),
     setTransitionPos: (coords: Coordinates) =>
       dispatch({
-        type: Action.SetTransitionPos,
+        type: TransitionAction.SetTransitionPos,
         payload: coords
       })
   })
