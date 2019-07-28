@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { promiseAnimation, uuid } from '../utils'
-import './modal.sass'
+import { promiseAnimation, uuid } from '../../utils'
+import './style.sass'
 
 interface IModalProps {
   title: string

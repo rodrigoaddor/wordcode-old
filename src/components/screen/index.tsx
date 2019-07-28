@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './screen.sass'
+import './style.sass'
 
 class Screen extends React.PureComponent<React.HTMLAttributes<HTMLDivElement>> {
   render() {
