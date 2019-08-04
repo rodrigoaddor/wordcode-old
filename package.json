@@ -13,18 +13,19 @@
   "dependencies": {
     "bulma": "^0.7.5",
     "classnames": "^2.2.6",
-    "parcel-plugin-static-files-copy": "^2.1.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-redux": "^7.0.3",
-    "redux": "^4.0.1",
-    "sass": "^1.20.3",
-    "typescript": "^3.5.1"
+    "redux": "^4.0.1"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.8",
     "@types/react": "^16.8.19",
     "@types/react-dom": "^16.8.4",
-    "parcel-bundler": "^1.12.3"
+    "@types/react-redux": "^7.1.1",
+    "parcel-bundler": "^1.12.3",
+    "parcel-plugin-static-files-copy": "^2.1.2",
+    "sass": "^1.20.3",
+    "typescript": "^3.5.1"
   }
 }

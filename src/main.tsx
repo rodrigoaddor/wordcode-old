@@ -9,14 +9,13 @@ import Game from './screen/game'
 
 import './main.sass'
 import { Route, Router, ScreenName } from './components/router'
-import { appear, ripple } from './transitions'
-import { TeamAction, Team } from './store/team';
+import { jsonObj } from './utils'
 
 const savedTeams = localStorage.getItem('teams')
 if (savedTeams) {
   store.dispatch({
     type: TeamAction.SetTeams,
-    payload: JSON.parse(savedTeams).map(team => Team.fromJson(team))
+    payload: (JSON.parse(savedTeams) as jsonObj).map((team: string) => Team.fromJson(team))
   })
 }
 
@@ -26,6 +25,7 @@ store.subscribe(() => {
 })
 
 ReactDOM.render(
+  //@ts-ignore idk
   <Provider store={store}>
     <Router initialScreen={ScreenName.Menu}>
       <Route screen={ScreenName.Menu} inTransition={appear}>

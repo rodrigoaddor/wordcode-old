@@ -5,16 +5,16 @@ import Screen from '../components/screen'
 import './menu.sass'
 import TeamsModal from '../components/teams'
 import { RouterContext, ScreenName } from '../components/router'
-import { Team, TeamAction } from '../store/team';
-import { Pos, TransitionAction } from '../store/transition';
-import { AppState } from '../store';
+import { Team, TeamAction } from '../store/team'
+import { Pos, TransitionAction } from '../store/transition'
+import { AppState } from '../store'
 
 const shakeKeyframes: PropertyIndexedKeyframes = {
   transform: [-1, 2, -4, 4, -4, 4, -4, 2, -1].map(i => `translateX(${i}px)`)
 }
 
 interface IMenuScreenProps {
-  setTeams?: (teams: Team[]) => void
+  setTeams: (teams: Team[]) => void
   setTransitionPos: (coords: Pos) => void
   initialTeams?: Team[]
 }
@@ -25,7 +25,7 @@ interface IMenuScreenState {
 
 class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
   private readonly teamsRef: React.RefObject<HTMLAnchorElement> = React.createRef()
-  
+
   state = {
     teamsModal: false
   }
@@ -49,8 +49,8 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
     )
 
     const onStart = (e: React.MouseEvent<HTMLAnchorElement>, routerContext: RouterContext) => {
-      if (this.props.initialTeams.length === 0) {
-        this.teamsRef.current.animate(shakeKeyframes, {
+      if (!this.props.initialTeams || this.props.initialTeams.length === 0) {
+        this.teamsRef.current!.animate(shakeKeyframes, {
           duration: 1000,
           easing: 'cubic-bezier(.36,.07,.19,.97)'
         })
@@ -64,12 +64,14 @@ class MenuScreen extends React.Component<IMenuScreenProps, IMenuScreenState> {
     return (
       <>
         <Screen>
-          <h1 className='is-title title'>WordCode</h1>
+          <h1 className='is-title menu-title'>WordCode</h1>
 
           <RouterContext.Consumer>
             {(routerContext: RouterContext) => (
               <div className='buttons has-addons'>
-                <a className='button is-rounded'>Words</a>
+                <a className='button is-rounded' onClick={() => routerContext.go(ScreenName.Words)}>
+                  Words
+                </a>
                 <a className='button is-large is-info' onClick={e => onStart(e, routerContext)}>
                   Start
                 </a>
@@ -100,7 +102,7 @@ export default connect(
         type: TeamAction.SetTeams,
         payload: teams
       }),
-    setTransitionPos: (coords: Coordinates) =>
+    setTransitionPos: (coords: Pos) =>
       dispatch({
         type: TransitionAction.SetTransitionPos,
         payload: coords
