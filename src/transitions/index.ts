@@ -1,4 +1,4 @@
-import { TransitionInfo, Transition } from '../components/router'
+import { TransitionInfo, Transition, TransitionType } from '../components/router'
 import { store } from '../store'
 
 const appear: Transition = {
@@ -10,7 +10,7 @@ const appear: Transition = {
 }
 
 const ripple = (transitionInfo: TransitionInfo): Transition => {
-  const { x, y } = store.getState().transition.pos
+  const { x, y } = store.getState().transition.pos!
 
   const px = x + 'px'
   const py = y + 'px'
@@ -27,4 +27,19 @@ const ripple = (transitionInfo: TransitionInfo): Transition => {
   }
 }
 
-export { appear, ripple }
+const slide = (transitionInfo: TransitionInfo): Transition => {
+  const keyframes: Keyframe[] = [{ transform: 'translateX(-100vw)' }, { transform: 'translateX(0)' }]
+  const normal = transitionInfo.type === TransitionType.IN
+
+  return {
+    keyframes: normal ? keyframes : keyframes.reverse(),
+    options: {
+      duration: 400,
+      easing: normal ? 'cubic-bezier(0.075, 0.82, 0.165, 1)' : 'cubic-bezier(0.6, 0.04, 0.98, 0.335)',
+      fill: 'forwards'
+    },
+    className: 'slide'
+  }
+}
+
+export { appear, ripple, slide }

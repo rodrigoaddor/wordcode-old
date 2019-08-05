@@ -1,0 +1,55 @@
+@import '~bulma/sass/utilities/mixins'
+
+.word-container
+  display: flex
+  width: 95vw
+  flex-wrap: wrap
+  justify-content: space-around
+
+.word-box
+  transition: background 300ms cubic-bezier(0.77, 0, 0.175, 1)
+  margin-bottom: 1.5rem
+  cursor: pointer
+  
+  &:hover
+    border: 4px #b5b5b5 !important
+
+  .title
+    transition: color 300ms cubic-bezier(0.77, 0, 0.175, 1)
+
+  .tag
+    position: absolute
+    top: 10px
+    right: 10px
+    transition: background 300ms cubic-bezier(0.77, 0, 0.175, 1), color 300ms cubic-bezier(0.77, 0, 0.175, 1)
+
+.back-container
+  position: absolute
+  bottom: 0
+  height: 5rem
+  width: 100vw
+  display: flex
+  justify-content: center
+  align-items: center
+
+.back-button
+
++desktop
+  .word-container
+    max-width: 90vw
+
++mobile
+  .word-box
+    min-width: 100%
+
++tablet
+  .word-box
+    min-width: 45%
+
++desktop
+  .word-box
+    min-width: 30%
+
++fullhd
+  .word-box
+    min-width: 22%

@@ -7,7 +7,8 @@ enum ScreenName {
   Menu,
   Waiting,
   Playing,
-  Scores
+  Scores,
+  Words
 }
 
 interface Transition {

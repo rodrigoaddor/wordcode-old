@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "bulma": "^0.7.5",
+    "bulma-pageloader": "^2.1.0",
     "classnames": "^2.2.6",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -27,5 +28,9 @@
     "parcel-plugin-static-files-copy": "^2.1.2",
     "sass": "^1.20.3",
     "typescript": "^3.5.1"
+  },
+  "staticFiles": {
+    "staticPath": "static",
+    "watcherGlob": "**"
   }
 }

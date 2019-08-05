@@ -1,10 +1,12 @@
 import { createStore, combineReducers } from 'redux'
 import { teamReducer } from './team'
-import { transitionReducer } from './transition';
+import { transitionReducer } from './transition'
+import { wordsReducer } from './words'
 
 const rootReducer = combineReducers({
   teams: teamReducer,
-  transition: transitionReducer
+  transition: transitionReducer,
+  words: wordsReducer
 })
 type AppState = ReturnType<typeof rootReducer>
 

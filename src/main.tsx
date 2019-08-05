@@ -1,7 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import * as IDB from 'idb'
 
 import { store, AppState } from './store'
 import Menu from './screen/menu'
@@ -9,6 +8,9 @@ import Game from './screen/game'
 
 import './main.sass'
 import { Route, Router, ScreenName } from './components/router'
+import { appear, ripple, slide } from './transitions'
+import { TeamAction, Team } from './store/team'
+import WordsScreen from './screen/words'
 import { jsonObj } from './utils'
 
 const savedTeams = localStorage.getItem('teams')
@@ -33,6 +35,9 @@ ReactDOM.render(
       </Route>
       <Route screen={ScreenName.Playing} inTransition={ripple}>
         <Game />
+      </Route>
+      <Route screen={ScreenName.Words} inTransition={slide} outTransition={slide}>
+        <WordsScreen />
       </Route>
     </Router>
   </Provider>,
