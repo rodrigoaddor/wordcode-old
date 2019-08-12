@@ -1,7 +1,5 @@
 [
-  {
-    "name": "Old",
-    "file": "old.txt",
-    "amount": 690
-  }
+  { "name": "Old", "file": "old.txt", "amount": 690 },
+  { "name": "a", "file": "a.txt", "amount": 8 },
+  { "name": "b", "file": "b.txt", "amount": 18 }
 ]

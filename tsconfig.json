@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "target": "es5",
+    "target": "es2017",
     "lib": ["es2016", "es2017", "esnext", "dom"],
     "sourceMap": true,
     "allowJs": true,
@@ -13,5 +13,5 @@
     "noImplicitAny": true,
     "strictNullChecks": true
   },
-  "exclude": ["dist"]
+  "exclude": ["dist", ".cache", "node_modules"]
 }

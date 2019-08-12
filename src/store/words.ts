@@ -1,5 +1,5 @@
 import { PayloadedAction } from './common'
-import { Words } from '../words'
+import Words from '../words'
 import { uuid } from '../utils'
 
 //  Actions  //
@@ -22,13 +22,18 @@ type WordsState = { [key: string]: Words }
 const defaultState: WordsState = {}
 
 const wordsReducer = (state: WordsState = defaultState, action: WordsActions): WordsState => {
+  let words: Words
   switch (action.type) {
     case WordsAction.LoadWords:
       return action.payload.reduce((obj, item) => ({ ...obj, [uuid('words')]: item }), {})
     case WordsAction.EnableWords:
-      return { ...state, [action.payload]: { ...state[action.payload], enabled: true } }
+      words = state[action.payload]
+      words.enabled = true
+      return { ...state, [action.payload]: words }
     case WordsAction.DisableWords:
-      return { ...state, [action.payload]: { ...state[action.payload], enabled: false } }
+      words = state[action.payload]
+      words.enabled = false
+      return { ...state, [action.payload]: words }
     default:
       return state
   }

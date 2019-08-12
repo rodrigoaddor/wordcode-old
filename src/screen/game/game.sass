@@ -1,0 +1,25 @@
+@import '~bulma/sass/utilities/mixins'
+
+.mobile-left, .mobile-right
+  position: absolute
+  cursor: pointer
+
+@media (orientation: landscape)
+  .mobile-left, .mobile-right
+    height: 100vh
+    width: 50vw
+    top: 0
+  .mobile-left
+    left: 0
+  .mobile-right
+    right: 0
+
+@media (orientation: portrait)
+  .mobile-left, .mobile-right
+    height: 50vh
+    width: 100vw
+    left: 0
+  .mobile-left
+    top: 0
+  .mobile-right
+    bottom: 0

@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import Screen from '../../components/screen'
 import { RouterContext, ScreenName } from '../../components/router'
-import { Words } from '../../words'
+import Words from '../../words'
 import classNames from 'classnames'
 
 import './words.sass'

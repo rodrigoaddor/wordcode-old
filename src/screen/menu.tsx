@@ -8,7 +8,7 @@ import { RouterContext, ScreenName } from '../components/router'
 import { Team, TeamAction } from '../store/team'
 import { Pos, TransitionAction } from '../store/transition'
 import { AppState } from '../store'
-import { Words } from '../words'
+import Words from '../words'
 
 const shakeKeyframes: PropertyIndexedKeyframes = {
   transform: [-1, 2, -4, 4, -4, 4, -4, 2, -1].map(i => `translateX(${i}px)`)
